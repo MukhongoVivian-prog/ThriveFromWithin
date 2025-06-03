@@ -21,5 +21,6 @@ urlpatterns = [
     path('api/learning/', include('learning.urls')),
     path('api/community/', include('community.urls')),
     path('api/resources/', include('resources.urls')),
+    path('api/SafeRoom/', include('SafeRoom.urls')),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]
