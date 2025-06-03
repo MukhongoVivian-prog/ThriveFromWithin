@@ -18,5 +18,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/core/', include('core.urls')),
     path('api/mental/', include('mental_health.urls')),
+    path('api/learning/', include('learning.urls')),
+    path('api/community/', include('community.urls')),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]
