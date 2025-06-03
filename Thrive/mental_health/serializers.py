@@ -14,13 +14,11 @@ class JournalEntrySerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ['user', 'created_at']
 
-
 class WellnessProgramSerializer(serializers.ModelSerializer):
     class Meta:
         model = WellnessProgram
         fields = '__all__'
-        read_only_fields = ['created_by']
-
+        ref_name = 'mentalhealth_WellnessProgram'
 
 class ProgramEnrollmentSerializer(serializers.ModelSerializer):
     class Meta:

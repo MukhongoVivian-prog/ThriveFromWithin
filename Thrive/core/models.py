@@ -5,12 +5,12 @@ from django.db import models
 
 class User(AbstractUser):
     ROLE_CHOICES = (
-        ('admin', 'Admin'),
-        ('manager', 'Company Manager'),
-        ('employee', 'Employee'),
-        ('therapist', 'Therapist'),
+        ('admin', 'ADMIN'),
+        ('manager', 'MANAGER'),
+        ('employee', 'EMPLOYEE'),
+        ('therapist', 'THERAPIST'),
     )
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='employee')
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='EMPLOYEE')
     company_name = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
