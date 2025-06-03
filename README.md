@@ -93,8 +93,8 @@ Implemented via `IsAdminUser`, `IsCompanyManager`, `IsEmployee`, and `IsTherapis
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/thrive-from-within.git
-cd thrive-from-within
+git clone https://github.com/MukhongoVivian-prog/ThriveFromWithin.git
+cd ThriveFromWithin
 
 # Create virtual environment
 python3 -m venv venv
