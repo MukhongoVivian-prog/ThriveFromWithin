@@ -23,7 +23,12 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
 class JournalEntryViewSet(viewsets.ModelViewSet):
     queryset = JournalEntry.objects.all()
     serializer_class = JournalEntrySerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated, IsAdminUser | IsCompanyManager | IsEmployee]
+    filter_backends = [DjangoFilterBackend, drf_filters.SearchFilter, drf_filters.OrderingFilter]
+    filterset_fields = ['user', 'created_at']
+    search_fields = ['user__username', 'content']
+    ordering_fields = ['created_at']
+    ordering = ['-created_at']
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -32,7 +37,7 @@ class JournalEntryViewSet(viewsets.ModelViewSet):
 class TherapistSessionViewSet(viewsets.ModelViewSet):
     queryset = TherapistSession.objects.all()
     serializer_class = TherapistSessionSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsEmployee | IsAdminUser | IsCompanyManager]
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

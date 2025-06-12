@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-6om#yrl9ru&v5$bv$*0u5132jy1ld9sfw35)$u%p5uue_tvqut
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -49,13 +49,17 @@ INSTALLED_APPS = [
     'drf_yasg',
     'django_filters',
     'learning',
+    'benefits',
     'community',
     'benefits',
     'rest_framework.authtoken'
+    "corsheaders",
 ]
 
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -64,6 +68,13 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",
+#     "http://serenity-one-tau.vercel.app",
+#     ]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'Thrive.urls'
 
