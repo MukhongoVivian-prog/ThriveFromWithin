@@ -3,6 +3,7 @@ from .models import WellnessProgram, WellnessEnrollment
 
 class WellnessProgramSerializer(serializers.ModelSerializer):
     class Meta:
+        ref_name = "wellness_serializer"
         model = WellnessProgram
         fields = '__all__'
 

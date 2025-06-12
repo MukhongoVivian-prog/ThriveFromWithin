@@ -1,9 +1,7 @@
 from django.contrib import admin
-from .models import WellnessProgram,TherapistSession, MoodCheckIn, JournalEntry, ProgramEnrollment
+from .models import TherapistSession,JournalEntry, ChatMessage
 
 # Register your models here.
-admin.site.register(WellnessProgram)
 admin.site.register(TherapistSession)
-admin.site.register(MoodCheckIn)
 admin.site.register(JournalEntry)
-admin.site.register(ProgramEnrollment)
+admin.site.register(ChatMessage)
