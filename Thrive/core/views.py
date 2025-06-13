@@ -99,6 +99,19 @@ class ManageCompanyMaterial(ViewSet):
 
         return Response(MaterialSerializer(material).data)
 
+class SetUserEnvironmentAndChallenges(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self,request,format=None):
+        data = request.POST
+        user = request.user
+        environment = data['environment']
+        # challenges = data['challenges']
+
+        user.environment = environment
+        # user.challenges = challenges
+        user.save()
+
+        return Response({},status=200)
 
 class ManageUser(ViewSet):
     """
@@ -154,9 +167,12 @@ class ManageUser(ViewSet):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
+            token,_ = Token.objects.get_or_create(user=user)
+
             return Response({
                 'message': 'User registered successfully',
-                'user': self.serializer_class(user).data
+                'user': self.serializer_class(user).data,
+                'token':token.key
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -166,7 +182,7 @@ class ManageUser(ViewSet):
         Response: 200 OK with user data, 404 if not found.
         """
         try:
-            user = self.queryset.get(pk=pk)
+            user = request.user
             serializer = self.serializer_class(user)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except User.DoesNotExist:
@@ -179,7 +195,7 @@ class ManageUser(ViewSet):
         Response: 200 OK with updated user, 400/404 on error.
         """
         try:
-            user = self.queryset.get(pk=pk)
+            user = request.user
             serializer = self.serializer_class(user, data=request.data, partial=True)
             if serializer.is_valid():
                 updated_user = serializer.save()
@@ -211,7 +227,7 @@ class CustomTokenView(APIView):
         user = authenticate(username=username, password=password)
         if user is not None:
             token,_ = Token.objects.get_or_create(user=user)
-            return Response({'token': token.key})
+            return Response({'token': token.key, "employee":user.role == "employee"})
         return Response({'error': 'Invalid credentials'}, status=401)
     
 """

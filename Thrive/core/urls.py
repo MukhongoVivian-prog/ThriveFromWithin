@@ -14,4 +14,5 @@ urlpatterns = [
     path('sounds', views.ManageSounds.as_view(), name="manage-sounds"),
     path('affirmation',views.GetAffirmations.as_view(), name="affirmation"),
     path('user/login/', views.CustomTokenView.as_view(), name='token_obtain_pair'),
+    path('user/question/', views.SetUserEnvironmentAndChallenges.as_view(), name="set-questions")
 ] + router.urls

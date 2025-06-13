@@ -25,7 +25,6 @@ class User(AbstractUser):
         ('employee', 'EMPLOYEE'),
         ('therapist', 'THERAPIST'),
     )
-<<<<<<< HEAD
     MOODS = (
         ('happy',"Happy"),
         ('neutral',"Neutral"),
@@ -44,10 +43,8 @@ class User(AbstractUser):
     rating = models.PositiveIntegerField(default=1, blank=True)
     bio = models.TextField(default="",blank=True)
     title = models.CharField(max_length=100,default="",blank=True)
-=======
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='EMPLOYEE')
-    company_name = models.CharField(max_length=255, blank=True, null=True)
->>>>>>> 16352f77fe86a09254118d02b60f43dc41edab2d
+    environment = models.CharField(max_length=100,default="",blank=True)
+    challenges = models.CharField(max_length=200, default="", blank=True)
 
     def __str__(self):
         return f"{self.first_name} ({self.role})"

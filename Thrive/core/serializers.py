@@ -37,6 +37,10 @@ class RegisterSerializer(serializers.ModelSerializer):
         }
 
     def validate(self, attrs):
+        # Skip validation if this is an update operation
+        if self.instance is not None:
+            return attrs
+            
         role = attrs.get('role', 'employee')
         if role == 'admin':
             # Company admin must provide all company fields
@@ -82,6 +86,11 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
     def update(self, instance, validated_data):
+        # Update user fields
+        # Add company_code_input if not present
+        if 'company_code_input' not in validated_data:
+            validated_data['company_code_input'] = instance.company.code if instance.company else None
+
         # Update username if email changes
         if 'email' in validated_data:
             validated_data['username'] = validated_data['email']
@@ -103,7 +112,7 @@ class RegisterSerializer(serializers.ModelSerializer):
                     updated = True
             if updated:
                 company.save()
-        # Update user fields
+
         return super().update(instance, validated_data)
     
 

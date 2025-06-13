@@ -51,8 +51,7 @@ INSTALLED_APPS = [
     'learning',
     'benefits',
     'community',
-    'benefits',
-    'rest_framework.authtoken'
+    'rest_framework.authtoken',
     "corsheaders",
 ]
 
