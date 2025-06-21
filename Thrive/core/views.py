@@ -15,6 +15,8 @@ from rest_framework.generics import ListAPIView
 
 from .models import Affirmation, Scene, Sound, User, Material
 from .serializers import AffirmationSerializer, MaterialSerializer, RegisterSerializer, CustomTokenObtainPairSerializer, SceneSerializer, SoundSerializer, TherapistSerializer, UserSerializer
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 """
 - [*]  Register normal user
@@ -51,6 +53,10 @@ class ManageCompanyMaterial(ViewSet):
     """
     permission_classes = [IsAuthenticated]
     
+    @swagger_auto_schema(
+        operation_summary="List all materials for the authenticated user's company",
+        responses={200: MaterialSerializer(many=True)}
+    )
     def list(self,request):
         """
         Get all materials for the authenticated user's company.
@@ -61,6 +67,18 @@ class ManageCompanyMaterial(ViewSet):
 
         return Response(MaterialSerializer(materials, many=True).data)
 
+    @swagger_auto_schema(
+        operation_summary="Upload a new material for the user's company",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'file_name': openapi.Schema(type=openapi.TYPE_STRING),
+                'description': openapi.Schema(type=openapi.TYPE_STRING),
+                'file': openapi.Schema(type=openapi.TYPE_FILE),
+            }
+        ),
+        responses={201: 'Created', 401: 'Unauthorized'}
+    )
     def create(self,request):
         """
         Upload a new material for the user's company.
@@ -88,6 +106,10 @@ class ManageCompanyMaterial(ViewSet):
         return Response(status=status.HTTP_201_CREATED)
 
 
+    @swagger_auto_schema(
+        operation_summary="Retrieve a single material by ID",
+        responses={200: MaterialSerializer()}
+    )
     def retrieve(self,request,pk=None):
         """
         Get a single material by ID for the user's company.
@@ -101,6 +123,17 @@ class ManageCompanyMaterial(ViewSet):
 
 class SetUserEnvironmentAndChallenges(APIView):
     permission_classes = [IsAuthenticated]
+    @swagger_auto_schema(
+        operation_summary="Set user's environment and challenges",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'environment': openapi.Schema(type=openapi.TYPE_STRING),
+                # 'challenges': openapi.Schema(type=openapi.TYPE_STRING),
+            }
+        ),
+        responses={200: 'Success'}
+    )
     def post(self,request,format=None):
         data = request.POST
         user = request.user
@@ -138,6 +171,14 @@ class ManageUser(ViewSet):
     permission_classes = [AllowAny]  # 🔐 Make this public
     serializer_class = RegisterSerializer
 
+    @swagger_auto_schema(
+        operation_summary="List all employees in the authenticated user's company",
+        manual_parameters=[
+            openapi.Parameter('staff-metric', openapi.IN_QUERY, description="Optional staff metric", type=openapi.TYPE_STRING),
+            openapi.Parameter('name', openapi.IN_QUERY, description="Optional name filter", type=openapi.TYPE_STRING),
+        ],
+        responses={200: UserSerializer(many=True)}
+    )
     def list(self,request):
         """
         List all employees in the authenticated user's company.
@@ -158,6 +199,11 @@ class ManageUser(ViewSet):
 
         return Response(UserSerializer(employees, many=True).data)
 
+    @swagger_auto_schema(
+        operation_summary="Register a new user",
+        request_body=RegisterSerializer,
+        responses={201: RegisterSerializer(), 400: 'Bad Request'}
+    )
     def create(self, request):
         """
         Register a new user.
@@ -176,6 +222,10 @@ class ManageUser(ViewSet):
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @swagger_auto_schema(
+        operation_summary="Get a user by ID",
+        responses={200: RegisterSerializer(), 404: 'Not Found'}
+    )
     def retrieve(self, request, pk=None):
         """
         Get a user by ID.
@@ -188,6 +238,11 @@ class ManageUser(ViewSet):
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
+    @swagger_auto_schema(
+        operation_summary="Update a user by ID",
+        request_body=RegisterSerializer,
+        responses={200: RegisterSerializer(), 400: 'Bad Request', 404: 'Not Found'}
+    )
     def update(self, request, pk=None):
         """
         Update a user by ID.
@@ -215,6 +270,20 @@ class CustomTokenView(APIView):
     Response: 200 OK with token, 401 if invalid credentials.
     """
     permission_classes = [AllowAny]
+    @swagger_auto_schema(
+        operation_summary="Obtain authentication token for a user",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'username': openapi.Schema(type=openapi.TYPE_STRING),
+                'password': openapi.Schema(type=openapi.TYPE_STRING),
+            }
+        ),
+        responses={200: openapi.Response('Token', openapi.Schema(type=openapi.TYPE_OBJECT, properties={
+            'token': openapi.Schema(type=openapi.TYPE_STRING),
+            'employee': openapi.Schema(type=openapi.TYPE_BOOLEAN)
+        })), 401: 'Invalid credentials'}
+    )
     def post(self,request, format=None):
         """
         Authenticate user and return token.
@@ -243,6 +312,13 @@ class ManageSounds(APIView):
     Response: 200 OK, list of sounds (title, tag, picture, audio).
     """
     permission_classes = [AllowAny]
+    @swagger_auto_schema(
+        operation_summary="Get and filter sounds",
+        manual_parameters=[
+            openapi.Parameter('title', openapi.IN_QUERY, description="Filter by sound title", type=openapi.TYPE_STRING)
+        ],
+        responses={200: SoundSerializer(many=True)}
+    )
     def get(self,request,format=None):
         """
         Get all sounds or filter by title.
@@ -267,6 +343,13 @@ class GetScenes(ListAPIView):
     serializer_class = SceneSerializer
     queryset = Scene.objects.all()
 
+    @swagger_auto_schema(
+        operation_summary="List all scenes",
+        responses={200: SceneSerializer(many=True)}
+    )
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
 class GetAffirmations(ListAPIView):
     """
     List all affirmations.
@@ -277,6 +360,12 @@ class GetAffirmations(ListAPIView):
     queryset = Affirmation.objects.all()
     serializer_class = AffirmationSerializer
 
+    @swagger_auto_schema(
+        operation_summary="List all affirmations",
+        responses={200: AffirmationSerializer(many=True)}
+    )
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
 class ManageTherapist(ViewSet):
     """
@@ -289,6 +378,13 @@ class ManageTherapist(ViewSet):
     queryset = User.objects.filter(role="therapist")
     serializer_class = ""
 
+    @swagger_auto_schema(
+        operation_summary="List all therapists, optionally filter by name",
+        manual_parameters=[
+            openapi.Parameter('name', openapi.IN_QUERY, description="Filter by therapist name", type=openapi.TYPE_STRING)
+        ],
+        responses={200: TherapistSerializer(many=True)}
+    )
     def list(self,request,format=None):
         """
         List all therapists, optionally filter by name.

@@ -7,7 +7,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'role', 'company_name']
+        fields = ['id', 'username', 'email', 'role']
 
 
 class RegisterSerializer(serializers.ModelSerializer):
